@@ -77,6 +77,7 @@ namespace CookBookClient
 
         private void buttonSendProducts_Click(object sender, EventArgs e)
         {
+            //для проверки основные продукты - картофель, майонез, сыр, рыба, мясо, молоко, мука, соль, сахар
             if (listBoxRecipes.Items.Count > 0)
             {
                 listBoxRecipes.Items.Clear();
