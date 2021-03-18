@@ -22,7 +22,7 @@ namespace CookBookClient
         private int port = 1025;
         private string products;
         private List<string> recipes;
-        private int countRecipes = 0;
+        private int countRecipes;
 
         public Form1()
         {
@@ -50,12 +50,15 @@ namespace CookBookClient
             ConnectServer();
             buttonCloseConnect.Enabled = true;
             buttonConnect.Enabled = false;
+            textBoxProducts.Enabled = true;
         }
 
         private void Form1_Load(object sender, EventArgs e)
         {
             buttonCloseConnect.Enabled = false;
             buttonSendProducts.Enabled = false;
+            textBoxProducts.Enabled = false;
+            recipes = new List<string>();
         }
 
         private void textBoxProducts_TextChanged(object sender, EventArgs e)
@@ -69,7 +72,7 @@ namespace CookBookClient
             client.Close();
             buttonConnect.Enabled = true;
             buttonCloseConnect.Enabled = false;
-            buttonSendProducts.Enabled = false;
+            buttonSendProducts.Enabled = false;   
         }
 
         private void buttonSendProducts_Click(object sender, EventArgs e)
@@ -78,6 +81,7 @@ namespace CookBookClient
             {
                 listBoxRecipes.Items.Clear();
                 recipes.Clear();
+                labelCountRecipes.Text = "0";
             }
             products = textBoxProducts.Text;
             textBoxProducts.Text = "";
@@ -95,6 +99,7 @@ namespace CookBookClient
                 MessageBox.Show("Нет подходящих рецептов!", "Message", MessageBoxButtons.OK, MessageBoxIcon.Information);
             else
             {
+                countRecipes = 0;
                 foreach (var item in recipes)
                 {
                     listBoxRecipes.Items.Add(item);
@@ -126,11 +131,9 @@ namespace CookBookClient
         }
 
         private void ReceiveRecipes()
-        {
-            recipes = new List<string>();
+        {    
             do
             {
-
                 byte[] buff = new byte[4];
                 client.Receive(buff);
                 int length = BitConverter.ToInt32(buff, 0);

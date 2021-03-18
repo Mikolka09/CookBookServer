@@ -53,22 +53,25 @@ namespace CookBookServer
                         Task task = Task.Run(() => SearchRecipe(products));
                         task.Wait();
 
-                        if (recipes.Count > 0)
+                        Task.Run(() =>
                         {
-                            foreach (var item in recipes)
+                            if (recipes.Count > 0)
                             {
-                                buff = Encoding.Unicode.GetBytes(item);
+                                foreach (var item in recipes)
+                                {
+                                    buff = Encoding.Unicode.GetBytes(item);
+                                    client.Send(BitConverter.GetBytes(buff.Length));
+                                    client.Send(buff);
+                                }
+                            }
+                            else
+                            {
+                                buff = Encoding.Unicode.GetBytes("Нет подходящих рецептов");
                                 client.Send(BitConverter.GetBytes(buff.Length));
                                 client.Send(buff);
                             }
-                        }
-                        else
-                        {
-                            buff = Encoding.Unicode.GetBytes("Нет подходящих рецептов");
-                            client.Send(BitConverter.GetBytes(buff.Length));
-                            client.Send(buff);
-                        }
-                        //int cnt = client.Available;
+                        });
+
                     }
                 }
                 catch (Exception ex)
@@ -105,6 +108,8 @@ namespace CookBookServer
                     recipes.Add(item.Recipe);
                     count = 0;
                 }
+                else
+                    count = 0;
             }
 
         }
